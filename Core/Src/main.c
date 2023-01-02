@@ -437,10 +437,10 @@ void StartTask02(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	  HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, 1);
-	  HAL_Delay(100);
-	  HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, 0);
-	  HAL_Delay(500);
+      HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, 1);
+      HAL_Delay(100);
+      HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, 0);
+      HAL_Delay(500);
     osDelay(1);
   }
   /* USER CODE END StartTask02 */
@@ -459,10 +459,10 @@ void StartTask03(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, 1);
-	HAL_Delay(333);
-	HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, 0);
-	HAL_Delay(333);
+      HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, 1);
+      HAL_Delay(333);
+      HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, 0);
+      HAL_Delay(333);
     osDelay(1);
   }
   /* USER CODE END StartTask03 */
