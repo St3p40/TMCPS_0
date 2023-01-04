@@ -36,10 +36,10 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define DELAY_FOR_BUTTON 100
-#define DELAY_LED1_ON 100
-#define DELAY_LED1_OFF 500
-#define DELAY_LED2_ON 333
-#define DELAY_LED2_OFF 333
+#define DELAY_LED1_ON    100
+#define DELAY_LED1_OFF   500
+#define DELAY_LED2_ON    333
+#define DELAY_LED2_OFF   333
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
