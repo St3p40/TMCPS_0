@@ -70,7 +70,8 @@ osThreadId defaultTaskHandle;
 osThreadId myTask01Handle;
 osThreadId myTask02Handle;
 /* USER CODE BEGIN PV */
-uint8_t led_mode = 0;
+enum mode {ALL_OFF,ONLY_1,ONLY_2,BOTH};
+uint8_t led_mode;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -414,7 +415,7 @@ void StartTask02(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	if(led_mode==1 || led_mode == 3){
+	if(led_mode== ONLY_1 || led_mode == BOTH){
       HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, 1);
       sLog("LED1 is On\r\n");
       osDelay(100);
@@ -443,7 +444,7 @@ void StartTask03(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    if(led_mode==2 || led_mode == 3){
+    if(led_mode == ONLY_2 || led_mode == BOTH){
       HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, 1);
       sLog("LED2 is On\r\n");
       osDelay(333);
