@@ -35,7 +35,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define LED_MODE_TOTAL 4
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -71,7 +70,13 @@ osThreadId defaultTaskHandle;
 osThreadId myTask01Handle;
 osThreadId myTask02Handle;
 /* USER CODE BEGIN PV */
-enum mode {LED_MODE_BLINK_NONE,LED_MODE_BLINK_LED1,LED_MODE_BLINK_LED2,LED_MODE_BLINK_BOTH};
+enum {
+  LED_MODE_BLINK_NONE = 0,
+  LED_MODE_BLINK_LED1,
+  LED_MODE_BLINK_LED2,
+  LED_MODE_BLINK_BOTH,
+  LED_MODE_TOTAL
+} mode;
 uint8_t led_mode = 0;
 /* USER CODE END PV */
 
