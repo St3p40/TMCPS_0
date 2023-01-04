@@ -443,7 +443,7 @@ void StartTask02(void const * argument)
     {
       HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
       osDelay(1);
-	}
+    }
   }
   /* USER CODE END StartTask02 */
 }
