@@ -83,10 +83,12 @@ enum {
 
   LED_MODE_TOTAL
 } mode;
+
 enum {
-	BUTTON_STATE_RELEASED = 0,
-	BUTTON_STATE_PRESSED
+  BUTTON_STATE_RELEASED = 0,
+  BUTTON_STATE_PRESSED
 } buttonsState;
+
 uint8_t led_mode = 0;
 /* USER CODE END PV */
 
@@ -413,6 +415,7 @@ void StartDefaultTask(void const * argument)
       {
         isClicked = BUTTON_STATE_RELEASED;
       }
+
     osDelay(1);
   }
   /* USER CODE END 5 */
