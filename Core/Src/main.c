@@ -35,7 +35,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define LED_MODES_AMOUNT 4
+#define LED_MODE_TOTAL 4
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -71,7 +71,7 @@ osThreadId defaultTaskHandle;
 osThreadId myTask01Handle;
 osThreadId myTask02Handle;
 /* USER CODE BEGIN PV */
-enum mode {ALL_OFF,ONLY_1,ONLY_2,BOTH};
+enum mode {LED_MODE_BLINK_NONE,LED_MODE_BLINK_LED1,LED_MODE_BLINK_LED2,LED_MODE_BLINK_BOTH};
 uint8_t led_mode = 0;
 /* USER CODE END PV */
 
@@ -389,7 +389,7 @@ void StartDefaultTask(void const * argument)
     if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == 1){
       if(isClicked == 0){
         sLog("Button is pressed\r\n");
-        led_mode = ++led_mode % LED_MODES_AMOUNT;
+        led_mode = ++led_mode % LED_MODE_TOTAL;
         osDelay(100);
         isClicked = 1;
         }
@@ -416,7 +416,7 @@ void StartTask02(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	if(led_mode == ONLY_1 || led_mode == BOTH){
+	if(led_mode == LED_MODE_BLINK_LED1 || led_mode == LED_MODE_BLINK_BOTH){
       HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, 1);
       sLog("LED1 is On\r\n");
       osDelay(100);
@@ -445,7 +445,7 @@ void StartTask03(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    if(led_mode == ONLY_2 || led_mode == BOTH){
+    if(led_mode == LED_MODE_BLINK_LED2 || led_mode == LED_MODE_BLINK_BOTH){
       HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, 1);
       sLog("LED2 is On\r\n");
       osDelay(333);
