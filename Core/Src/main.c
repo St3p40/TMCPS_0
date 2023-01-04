@@ -439,9 +439,10 @@ void StartTask02(void const * argument)
       sLog("LED1 is Off\r\n");
       osDelay(DELAY_LED1_OFF);
 	}
-    else{
-		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-        osDelay(1);
+    else
+    {
+      HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+      osDelay(1);
 	}
   }
   /* USER CODE END StartTask02 */
