@@ -75,6 +75,7 @@ enum {
   LED_MODE_BLINK_LED1,
   LED_MODE_BLINK_LED2,
   LED_MODE_BLINK_BOTH,
+
   LED_MODE_TOTAL
 } mode;
 uint8_t led_mode = 0;
