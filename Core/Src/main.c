@@ -427,7 +427,7 @@ void StartTask02(void const * argument)
     {
       HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, 0);
       osDelay(1);
-	}
+    }
   }
   /* USER CODE END StartTask02 */
 }
