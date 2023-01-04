@@ -70,7 +70,7 @@ osThreadId defaultTaskHandle;
 osThreadId myTask01Handle;
 osThreadId myTask02Handle;
 /* USER CODE BEGIN PV */
-
+uint8_t led_mode = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -381,8 +381,21 @@ void StartDefaultTask(void const * argument)
   /* USER CODE BEGIN 5 */
   sLog("Initialization is completed\r\n");
   /* Infinite loop */
+  static uint8_t isClicked = 0;
   for(;;)
   {
+	if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == 1){
+      if(isClicked == 0){
+        sLog("Button is pressed\r\n");
+        led_mode = (led_mode+1)%4;
+        osDelay(100);
+        isClicked = 1;
+        }
+      }
+      else
+      {
+        isClicked = 0;
+      }
     osDelay(1);
   }
   /* USER CODE END 5 */
@@ -401,12 +414,18 @@ void StartTask02(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, 1);
-    sLog("LED1 is On\r\n");
-    osDelay(100);
-    HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, 0);
-    sLog("LED1 is Off\r\n");
-    osDelay(500);
+	if(led_mode==1 || led_mode == 3){
+      HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, 1);
+      sLog("LED1 is On\r\n");
+      osDelay(100);
+      HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, 0);
+      sLog("LED1 is Off\r\n");
+      osDelay(500);
+	}
+	else{
+		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, 0);
+        osDelay(1);
+	}
   }
   /* USER CODE END StartTask02 */
 }
@@ -424,12 +443,19 @@ void StartTask03(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, 1);
-    sLog("LED2 is On\r\n");
-    osDelay(333);
-    HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, 0);
-    sLog("LED2 is Off\r\n");
-    osDelay(333);
+    if(led_mode==2 || led_mode == 3){
+      HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, 1);
+      sLog("LED2 is On\r\n");
+      osDelay(333);
+      HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, 0);
+      sLog("LED2 is Off\r\n");
+      osDelay(333);
+    }
+    else
+    {
+      HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, 0);
+      osDelay(1);
+    }
   }
   /* USER CODE END StartTask03 */
 }
