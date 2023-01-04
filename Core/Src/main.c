@@ -35,6 +35,11 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define DELAY_FOR_BUTTON 100
+#define DELAY_LED1_ON    100
+#define DELAY_LED1_OFF   500
+#define DELAY_LED2_ON    333
+#define DELAY_LED2_OFF   333
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -70,7 +75,21 @@ osThreadId defaultTaskHandle;
 osThreadId myTask01Handle;
 osThreadId myTask02Handle;
 /* USER CODE BEGIN PV */
+enum {
+  LED_MODE_BLINK_NONE = 0,
+  LED_MODE_BLINK_LED1,
+  LED_MODE_BLINK_LED2,
+  LED_MODE_BLINK_BOTH,
 
+  LED_MODE_TOTAL
+} mode;
+
+enum {
+  BUTTON_STATE_RELEASED = 0,
+  BUTTON_STATE_PRESSED
+} buttonsState;
+
+uint8_t led_mode = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -381,8 +400,22 @@ void StartDefaultTask(void const * argument)
   /* USER CODE BEGIN 5 */
   sLog("Initialization is completed\r\n");
   /* Infinite loop */
+  static uint8_t isClicked = BUTTON_STATE_RELEASED;
   for(;;)
   {
+    if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET ){
+      if(isClicked == BUTTON_STATE_RELEASED){
+        sLog("Button is pressed\r\n");
+        led_mode = ++led_mode % LED_MODE_TOTAL;
+        osDelay(DELAY_FOR_BUTTON);
+        isClicked = BUTTON_STATE_PRESSED;
+        }
+      }
+      else
+      {
+        isClicked = BUTTON_STATE_RELEASED;
+      }
+
     osDelay(1);
   }
   /* USER CODE END 5 */
@@ -401,12 +434,19 @@ void StartTask02(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, 1);
-    sLog("LED1 is On\r\n");
-    osDelay(100);
-    HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, 0);
-    sLog("LED1 is Off\r\n");
-    osDelay(500);
+    if(led_mode == LED_MODE_BLINK_LED1 || led_mode == LED_MODE_BLINK_BOTH){
+      HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+      sLog("LED1 is On\r\n");
+      osDelay(DELAY_LED1_ON);
+      HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+      sLog("LED1 is Off\r\n");
+      osDelay(DELAY_LED1_OFF);
+	}
+    else
+    {
+      HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+      osDelay(1);
+    }
   }
   /* USER CODE END StartTask02 */
 }
@@ -424,12 +464,19 @@ void StartTask03(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, 1);
-    sLog("LED2 is On\r\n");
-    osDelay(333);
-    HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, 0);
-    sLog("LED2 is Off\r\n");
-    osDelay(333);
+    if(led_mode == LED_MODE_BLINK_LED2 || led_mode == LED_MODE_BLINK_BOTH){
+      HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+      sLog("LED2 is On\r\n");
+      osDelay(DELAY_LED2_ON);
+      HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+      sLog("LED2 is Off\r\n");
+      osDelay(DELAY_LED2_OFF);
+    }
+    else
+    {
+      HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+      osDelay(1);
+    }
   }
   /* USER CODE END StartTask03 */
 }
