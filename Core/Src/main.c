@@ -385,7 +385,7 @@ void StartDefaultTask(void const * argument)
   static uint8_t isClicked = 0;
   for(;;)
   {
-    if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == 1){
+   if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == 1){
       if(isClicked == 0){
         sLog("Button is pressed\r\n");
         led_mode = (led_mode+1)%4;
@@ -415,7 +415,7 @@ void StartTask02(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	if(led_mode== ONLY_1 || led_mode == BOTH){
+    if(led_mode== ONLY_1 || led_mode == BOTH){
       HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, 1);
       sLog("LED1 is On\r\n");
       osDelay(100);
