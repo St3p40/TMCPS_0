@@ -426,12 +426,12 @@ void StartDefaultTask(void const * argument)
       }
 
     if(Led3Blink == LED3_STATE_ON){
-    	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
-        sLog("LED3 is On\r\n");
-        osDelay(DELAY_LED3_ON);
-        HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-        sLog("LED3 is Off\r\n");
-        osDelay(DELAY_LED3_OFF);
+      HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+      sLog("LED3 is On\r\n");
+      osDelay(DELAY_LED3_ON);
+      HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+      sLog("LED3 is Off\r\n");
+      osDelay(DELAY_LED3_OFF);
     }
     else
     {
