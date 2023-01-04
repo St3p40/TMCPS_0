@@ -384,7 +384,7 @@ void StartDefaultTask(void const * argument)
   static uint8_t isClicked = 0;
   for(;;)
   {
-	if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == 1){
+    if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == 1){
       if(isClicked == 0){
         sLog("Button is pressed\r\n");
         led_mode = (led_mode+1)%4;
