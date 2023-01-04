@@ -40,6 +40,8 @@
 #define DELAY_LED1_OFF   500
 #define DELAY_LED2_ON    333
 #define DELAY_LED2_OFF   333
+#define DELAY_LED3_ON    150
+#define DELAY_LED3_OFF   150
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -88,6 +90,11 @@ enum {
   BUTTON_STATE_RELEASED = 0,
   BUTTON_STATE_PRESSED
 } buttonsState;
+
+enum {
+  LED3_STATE_OFF = 0,
+  LED3_STATE_ON
+} LED3State;
 
 uint8_t led_mode = 0;
 /* USER CODE END PV */
@@ -401,12 +408,14 @@ void StartDefaultTask(void const * argument)
   sLog("Initialization is completed\r\n");
   /* Infinite loop */
   static uint8_t isClicked = BUTTON_STATE_RELEASED;
+  static uint8_t Led3Blink = LED3_STATE_OFF;
   for(;;)
   {
     if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET ){
       if(isClicked == BUTTON_STATE_RELEASED){
         sLog("Button is pressed\r\n");
         led_mode = ++led_mode % LED_MODE_TOTAL;
+        Led3Blink = !Led3Blink;
         osDelay(DELAY_FOR_BUTTON);
         isClicked = BUTTON_STATE_PRESSED;
         }
@@ -415,6 +424,19 @@ void StartDefaultTask(void const * argument)
       {
         isClicked = BUTTON_STATE_RELEASED;
       }
+
+    if(Led3Blink == LED3_STATE_ON){
+    	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+        sLog("LED3 is On\r\n");
+        osDelay(DELAY_LED3_ON);
+        HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+        sLog("LED3 is Off\r\n");
+        osDelay(DELAY_LED3_OFF);
+    }
+    else
+    {
+      HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+    }
 
     osDelay(1);
   }
