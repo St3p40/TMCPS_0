@@ -431,7 +431,7 @@ void StartTask02(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	if(led_mode == LED_MODE_BLINK_LED1 || led_mode == LED_MODE_BLINK_BOTH){
+    if(led_mode == LED_MODE_BLINK_LED1 || led_mode == LED_MODE_BLINK_BOTH){
       HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
       sLog("LED1 is On\r\n");
       osDelay(DELAY_LED1_ON);
@@ -439,7 +439,7 @@ void StartTask02(void const * argument)
       sLog("LED1 is Off\r\n");
       osDelay(DELAY_LED1_OFF);
 	}
-	else{
+    else{
 		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
         osDelay(1);
 	}
