@@ -40,6 +40,8 @@
 #define DELAY_LED1_OFF   500
 #define DELAY_LED2_ON    333
 #define DELAY_LED2_OFF   333
+#define DELAY_LED3_ON    2000
+#define DELAY_LED3_OFF   1000
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -74,6 +76,7 @@ UART_HandleTypeDef huart3;
 osThreadId defaultTaskHandle;
 osThreadId myTask01Handle;
 osThreadId myTask02Handle;
+osThreadId myTask04Handle;
 /* USER CODE BEGIN PV */
 enum {
   LED_MODE_BLINK_NONE = 0,
@@ -89,7 +92,16 @@ enum {
   BUTTON_STATE_PRESSED
 } buttonsState;
 
-uint8_t led_mode = 0;
+enum {
+  LED3_STATE_OFF = 0,
+  LED3_STATE_ON,
+
+  LED3_BLINK_OFF,
+  LED3_BLINK_ON
+} LED3State;
+
+uint8_t led_mode = LED_MODE_BLINK_NONE;
+uint32_t millis = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -100,6 +112,7 @@ static void MX_USART3_UART_Init(void);
 void StartDefaultTask(void const * argument);
 void StartTask02(void const * argument);
 void StartTask03(void const * argument);
+void StartTask04(void const * argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -171,6 +184,10 @@ int main(void)
   /* definition and creation of myTask02 */
   osThreadDef(myTask02, StartTask03, osPriorityIdle, 0, 128);
   myTask02Handle = osThreadCreate(osThread(myTask02), NULL);
+
+  /* definition and creation of myTask04 */
+  osThreadDef(myTask04, StartTask04, osPriorityIdle, 0, 128);
+  myTask04Handle = osThreadCreate(osThread(myTask04), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -401,12 +418,19 @@ void StartDefaultTask(void const * argument)
   sLog("Initialization is completed\r\n");
   /* Infinite loop */
   static uint8_t isClicked = BUTTON_STATE_RELEASED;
+  static uint8_t Led3Blink = LED3_BLINK_OFF;
+  static uint8_t Led3State = LED3_STATE_OFF;
+  static uint32_t timer = 0;
   for(;;)
   {
     if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET ){
       if(isClicked == BUTTON_STATE_RELEASED){
         sLog("Button is pressed\r\n");
         led_mode = ++led_mode % LED_MODE_TOTAL;
+        if(Led3Blink == LED3_BLINK_OFF)
+        	Led3Blink = LED3_BLINK_ON;
+        else
+        	Led3Blink = LED3_BLINK_OFF;
         osDelay(DELAY_FOR_BUTTON);
         isClicked = BUTTON_STATE_PRESSED;
         }
@@ -415,6 +439,32 @@ void StartDefaultTask(void const * argument)
       {
         isClicked = BUTTON_STATE_RELEASED;
       }
+
+    if(Led3Blink == LED3_BLINK_ON){
+      uint32_t t = 0;
+      if(Led3State == LED3_STATE_ON)
+        t = DELAY_LED3_ON;
+      else
+        t = DELAY_LED3_OFF;
+      if(millis-timer >= t){
+        timer = millis;
+        if(Led3State == LED3_STATE_ON){
+          HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+          sLog("LED3 is Off\r\n");
+          Led3State = LED3_STATE_OFF;
+        }
+        else
+        {
+          HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+          sLog("LED3 is On\r\n");
+          Led3State = LED3_STATE_ON;
+        }
+      }
+    }
+    else
+    {
+      HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+    }
 
     osDelay(1);
   }
@@ -479,6 +529,25 @@ void StartTask03(void const * argument)
     }
   }
   /* USER CODE END StartTask03 */
+}
+
+/* USER CODE BEGIN Header_StartTask04 */
+/**
+* @brief Function implementing the myTask04 thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask04 */
+void StartTask04(void const * argument)
+{
+  /* USER CODE BEGIN StartTask04 */
+  /* Infinite loop */
+  for(;;)
+  {
+    millis++;
+    osDelay(1);
+  }
+  /* USER CODE END StartTask04 */
 }
 
 /**
