@@ -66,9 +66,9 @@ ETH_TxPacketConfig TxConfig;
 
 ETH_HandleTypeDef heth;
 
-USART_HandleTypeDef husart2;
+UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
-USART_HandleTypeDef husart6;
+UART_HandleTypeDef huart6;
 
 osThreadId defaultTaskHandle;
 osThreadId myTask01Handle;
@@ -89,8 +89,8 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ETH_Init(void);
 static void MX_USART3_UART_Init(void);
-static void MX_USART2_Init(void);
-static void MX_USART6_Init(void);
+static void MX_USART2_UART_Init(void);
+static void MX_USART6_UART_Init(void);
 void StartDefaultTask(void const * argument);
 void StartTask02(void const * argument);
 void StartTask03(void const * argument);
@@ -133,8 +133,8 @@ int main(void)
   MX_GPIO_Init();
   MX_ETH_Init();
   MX_USART3_UART_Init();
-  MX_USART2_Init();
-  MX_USART6_Init();
+  MX_USART2_UART_Init();
+  MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -298,7 +298,7 @@ static void MX_ETH_Init(void)
   * @param None
   * @retval None
   */
-static void MX_USART2_Init(void)
+static void MX_USART2_UART_Init(void)
 {
 
   /* USER CODE BEGIN USART2_Init 0 */
@@ -308,16 +308,17 @@ static void MX_USART2_Init(void)
   /* USER CODE BEGIN USART2_Init 1 */
 
   /* USER CODE END USART2_Init 1 */
-  husart2.Instance = USART2;
-  husart2.Init.BaudRate = 115200;
-  husart2.Init.WordLength = USART_WORDLENGTH_8B;
-  husart2.Init.StopBits = USART_STOPBITS_1;
-  husart2.Init.Parity = USART_PARITY_NONE;
-  husart2.Init.Mode = USART_MODE_TX_RX;
-  husart2.Init.CLKPolarity = USART_POLARITY_LOW;
-  husart2.Init.CLKPhase = USART_PHASE_1EDGE;
-  husart2.Init.CLKLastBit = USART_LASTBIT_DISABLE;
-  if (HAL_USART_Init(&husart2) != HAL_OK)
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -367,7 +368,7 @@ static void MX_USART3_UART_Init(void)
   * @param None
   * @retval None
   */
-static void MX_USART6_Init(void)
+static void MX_USART6_UART_Init(void)
 {
 
   /* USER CODE BEGIN USART6_Init 0 */
@@ -377,16 +378,17 @@ static void MX_USART6_Init(void)
   /* USER CODE BEGIN USART6_Init 1 */
 
   /* USER CODE END USART6_Init 1 */
-  husart6.Instance = USART6;
-  husart6.Init.BaudRate = 115200;
-  husart6.Init.WordLength = USART_WORDLENGTH_8B;
-  husart6.Init.StopBits = USART_STOPBITS_1;
-  husart6.Init.Parity = USART_PARITY_NONE;
-  husart6.Init.Mode = USART_MODE_TX_RX;
-  husart6.Init.CLKPolarity = USART_POLARITY_LOW;
-  husart6.Init.CLKPhase = USART_PHASE_1EDGE;
-  husart6.Init.CLKLastBit = USART_LASTBIT_DISABLE;
-  if (HAL_USART_Init(&husart6) != HAL_OK)
+  huart6.Instance = USART6;
+  huart6.Init.BaudRate = 115200;
+  huart6.Init.WordLength = UART_WORDLENGTH_8B;
+  huart6.Init.StopBits = UART_STOPBITS_1;
+  huart6.Init.Parity = UART_PARITY_NONE;
+  huart6.Init.Mode = UART_MODE_TX_RX;
+  huart6.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart6.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart6.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart6.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart6) != HAL_OK)
   {
     Error_Handler();
   }
@@ -485,9 +487,17 @@ void StartTask02(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-      HAL_USART_Transmit_IT(&husart2,"LED ON",10);
+	  const uint8_t Test1[10] = "LED ON";
+      HAL_UART_Transmit(&huart2,Test1,10,100);
+      //sLog("Transmitted: ");
+      //sLog(Test1);
+      //sLog("\r\n");
       osDelay(DELAY_LED1_ON);
-      HAL_USART_Transmit_IT(&husart2,"LED OFF",10);
+      const uint8_t Test2[10] = "LED OFF";
+      HAL_UART_Transmit(&huart2,Test2,10,100);
+      //sLog("Transmitted: ");
+      //sLog(Test2);
+      //sLog("\r\n");
       osDelay(DELAY_LED1_OFF);
   }
   /* USER CODE END StartTask02 */
@@ -506,12 +516,12 @@ void StartTask03(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	  uint8_t Test[10] = "";
-      HAL_USART_Receive_IT(&husart6, Test, sizeof(Test));
+	  uint8_t Test[10] = {0};
+      HAL_UART_Receive(&huart6, Test, sizeof(Test),1000);
 	  if(Test[0]){
 		  sLog("Received: ");
           sLog(Test);
-          sLog("\n");
+          sLog("\r\n");
 		  if(Test == "LED ON"){
 			  led_mode = LED1_STATE_ON;
 		  }
