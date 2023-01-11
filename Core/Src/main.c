@@ -489,15 +489,22 @@ void StartTask02(void const * argument)
   {
 	  //const uint8_t Test1[10] = "LED ON";
       const uint8_t Test1[2] = {1,2};
-	  if(HAL_UART_Transmit(&huart6,Test1,2,100) == HAL_OK){
-      sLog("Transmitted message #1\r\n");}
-      //sLog("\r\n");
+      uint8_t transmission_status = HAL_UART_Transmit(&huart6,Test1,2,100);
+      switch(transmission_status){
+        case HAL_OK:       sLog("Transmitted message #1\r\n"); break;
+        case HAL_ERROR:    sLog("Error with transmission message #1\r\n"); break;
+        case HAL_BUSY:     sLog("USART is busy (message #1)\r\n"); break;
+        case HAL_TIMEOUT:  sLog("Transmission is timeout (message #1)\r\n"); break;
+      }
       osDelay(DELAY_LED1_ON);
       //const uint8_t Test2[10] = "LED OFF";
       const uint8_t Test2[2] = {2,3};
-      if(HAL_UART_Transmit(&huart6,Test2,2,100) == HAL_OK){
-      sLog("Transmitted message #2\r\n");}
-      //sLog("\r\n");
+      switch(transmission_status){
+        case HAL_OK:       sLog("Transmitted message #2\r\n"); break;
+        case HAL_ERROR:    sLog("Error with transmission message #2\r\n"); break;
+        case HAL_BUSY:     sLog("USART is busy (message #2)\r\n"); break;
+        case HAL_TIMEOUT:  sLog("Transmission is timeout (message #2)\r\n"); break;
+      }
       osDelay(DELAY_LED1_OFF);
   }
   /* USER CODE END StartTask02 */
@@ -517,17 +524,21 @@ void StartTask03(void const * argument)
   for(;;)
   {
 	  uint8_t Test[2] = {0};
-	  if(HAL_UART_Receive(&huart2, Test, sizeof(Test),1000) == HAL_OK){
-		  sLog("Received: ");
-          sLog(Test);
-          sLog("\r\n");
-		  if(Test[1] == 2){
-			  led_mode = LED1_STATE_ON;
-		  }
-		  else if (Test[1] == 3){
-			  led_mode = LED1_STATE_OFF;
-		  }
-	  }
+      uint8_t receive_status = HAL_UART_Receive(&huart2, Test, sizeof(Test),1000);
+      switch(receive_status){
+        case HAL_OK:  sLog("Received: ");
+        sLog(Test);
+        if(Test[1] == 2){
+          led_mode = LED1_STATE_ON;
+        }
+        else if (Test[1] == 3){
+           led_mode = LED1_STATE_OFF;
+        }
+        break;
+        case HAL_ERROR:    sLog("Error with receiving\r\n"); break;
+        case HAL_BUSY:     sLog("USART is busy (receiving)\r\n"); break;
+        case HAL_TIMEOUT:  sLog("Receiving is timeout\r\n"); break;
+      }
       osDelay(1);
     }
   /* USER CODE END StartTask03 */
