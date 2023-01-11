@@ -489,16 +489,14 @@ void StartTask02(void const * argument)
   {
 	  //const uint8_t Test1[10] = "LED ON";
       const uint8_t Test1[2] = {1,2};
-	  HAL_UART_Transmit(&huart6,Test1,2,100);
-      //sLog("Transmitted: ");
-      //sLog(Test1);
+	  if(HAL_UART_Transmit(&huart6,Test1,2,100) == HAL_OK){
+      sLog("Transmitted message #1\r\n");}
       //sLog("\r\n");
       osDelay(DELAY_LED1_ON);
       //const uint8_t Test2[10] = "LED OFF";
       const uint8_t Test2[2] = {2,3};
-      HAL_UART_Transmit(&huart6,Test2,2,100);
-      //sLog("Transmitted: ");
-      //sLog(Test2);
+      if(HAL_UART_Transmit(&huart6,Test2,2,100) == HAL_OK){
+      sLog("Transmitted message #2\r\n");}
       //sLog("\r\n");
       osDelay(DELAY_LED1_OFF);
   }
