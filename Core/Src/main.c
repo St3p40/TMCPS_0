@@ -487,14 +487,16 @@ void StartTask02(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	  const uint8_t Test1[10] = "LED ON";
-      HAL_UART_Transmit(&huart2,Test1,10,100);
+	  //const uint8_t Test1[10] = "LED ON";
+      const uint8_t Test1[2] = {1,2};
+	  HAL_UART_Transmit(&huart6,Test1,2,100);
       //sLog("Transmitted: ");
       //sLog(Test1);
       //sLog("\r\n");
       osDelay(DELAY_LED1_ON);
-      const uint8_t Test2[10] = "LED OFF";
-      HAL_UART_Transmit(&huart2,Test2,10,100);
+      //const uint8_t Test2[10] = "LED OFF";
+      const uint8_t Test2[2] = {2,3};
+      HAL_UART_Transmit(&huart6,Test2,2,100);
       //sLog("Transmitted: ");
       //sLog(Test2);
       //sLog("\r\n");
@@ -516,16 +518,15 @@ void StartTask03(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	  uint8_t Test[10] = {0};
-      HAL_UART_Receive(&huart6, Test, sizeof(Test),1000);
-	  if(Test[0]){
+	  uint8_t Test[2] = {0};
+	  if(HAL_UART_Receive(&huart2, Test, sizeof(Test),1000) == HAL_OK){
 		  sLog("Received: ");
           sLog(Test);
           sLog("\r\n");
-		  if(Test == "LED ON"){
+		  if(Test[1] == 2){
 			  led_mode = LED1_STATE_ON;
 		  }
-		  else if (Test == "LED OFF"){
+		  else if (Test[1] == 3){
 			  led_mode = LED1_STATE_OFF;
 		  }
 	  }
