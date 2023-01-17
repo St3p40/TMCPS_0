@@ -81,7 +81,6 @@ enum {
 } LED1State;
 
 uint8_t led_mode = LED1_STATE_OFF;
-uint32_t millis = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -487,9 +486,8 @@ void StartTask02(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	  //const uint8_t Test1[10] = "LED ON";
-      const uint8_t Test1[2] = {1,2};
-      uint8_t transmission_status = HAL_UART_Transmit(&huart6,Test1,2,100);
+      const uint8_t Test1 = '1';
+      HAL_StatusTypeDef transmission_status = HAL_UART_Transmit(&huart6,&Test1,1,100);
       switch(transmission_status){
         case HAL_OK:       sLog("Transmitted message #1\r\n"); break;
         case HAL_ERROR:    sLog("Error with transmission message #1\r\n"); break;
@@ -497,8 +495,8 @@ void StartTask02(void const * argument)
         case HAL_TIMEOUT:  sLog("Transmission is timeout (message #1)\r\n"); break;
       }
       osDelay(DELAY_LED1_ON);
-      //const uint8_t Test2[10] = "LED OFF";
-      const uint8_t Test2[2] = {2,3};
+      const uint8_t Test2 = '2';
+      transmission_status = HAL_UART_Transmit(&huart6,&Test2,1,100);
       switch(transmission_status){
         case HAL_OK:       sLog("Transmitted message #2\r\n"); break;
         case HAL_ERROR:    sLog("Error with transmission message #2\r\n"); break;
@@ -523,15 +521,14 @@ void StartTask03(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	  uint8_t Test[2] = {0};
-      uint8_t receive_status = HAL_UART_Receive(&huart2, Test, sizeof(Test),1000);
+	  uint8_t Test = 0;
+	  HAL_StatusTypeDef receive_status = HAL_UART_Receive(&huart2, &Test, 1, 500);
       switch(receive_status){
-        case HAL_OK:  sLog("Received: ");
-        sLog(Test);
-        if(Test[1] == 2){
+        case HAL_OK:
+        if(Test == '1'){
           led_mode = LED1_STATE_ON;
         }
-        else if (Test[1] == 3){
+        else if (Test == '2'){
            led_mode = LED1_STATE_OFF;
         }
         break;
