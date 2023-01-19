@@ -35,13 +35,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define DELAY_FOR_BUTTON 100
-#define DELAY_LED1_ON    100
-#define DELAY_LED1_OFF   500
-#define DELAY_LED2_ON    333
-#define DELAY_LED2_OFF   333
-#define DELAY_LED3_ON    2000
-#define DELAY_LED3_OFF   1000
+#define DELAY_LED1_ON    1000
+#define DELAY_LED1_OFF   2000
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -71,38 +66,21 @@ ETH_TxPacketConfig TxConfig;
 
 ETH_HandleTypeDef heth;
 
-TIM_HandleTypeDef htim13;
-
+UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
+UART_HandleTypeDef huart6;
 
 osThreadId defaultTaskHandle;
 osThreadId myTask01Handle;
 osThreadId myTask02Handle;
 /* USER CODE BEGIN PV */
-enum {
-  LED_MODE_BLINK_NONE = 0,
-  LED_MODE_BLINK_LED1,
-  LED_MODE_BLINK_LED2,
-  LED_MODE_BLINK_BOTH,
-
-  LED_MODE_TOTAL
-} mode;
 
 enum {
-  BUTTON_STATE_RELEASED = 0,
-  BUTTON_STATE_PRESSED
-} buttonsState;
+  LED1_STATE_OFF = 0,
+  LED1_STATE_ON
+} LED1State;
 
-enum {
-  LED3_STATE_OFF = 0,
-  LED3_STATE_ON,
-
-  LED3_BLINK_OFF,
-  LED3_BLINK_ON
-} LED3State;
-
-uint8_t led_mode = LED_MODE_BLINK_NONE;
-uint32_t millis = 0;
+uint8_t led_mode = LED1_STATE_OFF;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -110,7 +88,8 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ETH_Init(void);
 static void MX_USART3_UART_Init(void);
-static void MX_TIM13_Init(void);
+static void MX_USART2_UART_Init(void);
+static void MX_USART6_UART_Init(void);
 void StartDefaultTask(void const * argument);
 void StartTask02(void const * argument);
 void StartTask03(void const * argument);
@@ -153,7 +132,8 @@ int main(void)
   MX_GPIO_Init();
   MX_ETH_Init();
   MX_USART3_UART_Init();
-  MX_TIM13_Init();
+  MX_USART2_UART_Init();
+  MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -180,11 +160,11 @@ int main(void)
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of myTask01 */
-  osThreadDef(myTask01, StartTask02, osPriorityIdle, 0, 128);
+  osThreadDef(myTask01, StartTask02, osPriorityNormal, 0, 128);
   myTask01Handle = osThreadCreate(osThread(myTask01), NULL);
 
   /* definition and creation of myTask02 */
-  osThreadDef(myTask02, StartTask03, osPriorityIdle, 0, 128);
+  osThreadDef(myTask02, StartTask03, osPriorityNormal, 0, 128);
   myTask02Handle = osThreadCreate(osThread(myTask02), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -313,33 +293,37 @@ static void MX_ETH_Init(void)
 }
 
 /**
-  * @brief TIM13 Initialization Function
+  * @brief USART2 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_TIM13_Init(void)
+static void MX_USART2_UART_Init(void)
 {
 
-  /* USER CODE BEGIN TIM13_Init 0 */
+  /* USER CODE BEGIN USART2_Init 0 */
 
-  /* USER CODE END TIM13_Init 0 */
+  /* USER CODE END USART2_Init 0 */
 
-  /* USER CODE BEGIN TIM13_Init 1 */
+  /* USER CODE BEGIN USART2_Init 1 */
 
-  /* USER CODE END TIM13_Init 1 */
-  htim13.Instance = TIM13;
-  htim13.Init.Prescaler = 8;
-  htim13.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim13.Init.Period = 65535;
-  htim13.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim13.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim13) != HAL_OK)
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN TIM13_Init 2 */
+  /* USER CODE BEGIN USART2_Init 2 */
 
-  /* USER CODE END TIM13_Init 2 */
+  /* USER CODE END USART2_Init 2 */
 
 }
 
@@ -375,6 +359,41 @@ static void MX_USART3_UART_Init(void)
   /* USER CODE BEGIN USART3_Init 2 */
 
   /* USER CODE END USART3_Init 2 */
+
+}
+
+/**
+  * @brief USART6 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART6_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART6_Init 0 */
+
+  /* USER CODE END USART6_Init 0 */
+
+  /* USER CODE BEGIN USART6_Init 1 */
+
+  /* USER CODE END USART6_Init 1 */
+  huart6.Instance = USART6;
+  huart6.Init.BaudRate = 115200;
+  huart6.Init.WordLength = UART_WORDLENGTH_8B;
+  huart6.Init.StopBits = UART_STOPBITS_1;
+  huart6.Init.Parity = UART_PARITY_NONE;
+  huart6.Init.Mode = UART_MODE_TX_RX;
+  huart6.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart6.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart6.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart6.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart6) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART6_Init 2 */
+
+  /* USER CODE END USART6_Init 2 */
 
 }
 
@@ -430,13 +449,6 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-  if(htim == &htim13)
-  {
-    millis++;
-  }
-}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -453,56 +465,9 @@ void StartDefaultTask(void const * argument)
   /* USER CODE BEGIN 5 */
   sLog("Initialization is completed\r\n");
   /* Infinite loop */
-  static uint8_t isClicked = BUTTON_STATE_RELEASED;
-  static uint8_t Led3Blink = LED3_BLINK_OFF;
-  static uint8_t Led3State = LED3_STATE_OFF;
-  static uint32_t timer = 0;
   for(;;)
   {
-    HAL_TIM_PeriodElapsedCallback(&htim13);
-    if(HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin) == GPIO_PIN_SET ){
-      if(isClicked == BUTTON_STATE_RELEASED){
-        sLog("Button is pressed\r\n");
-        led_mode = ++led_mode % LED_MODE_TOTAL;
-        if(Led3Blink == LED3_BLINK_OFF)
-        	Led3Blink = LED3_BLINK_ON;
-        else
-        	Led3Blink = LED3_BLINK_OFF;
-        osDelay(DELAY_FOR_BUTTON);
-        isClicked = BUTTON_STATE_PRESSED;
-        }
-      }
-      else
-      {
-        isClicked = BUTTON_STATE_RELEASED;
-      }
-
-    if(Led3Blink == LED3_BLINK_ON){
-      uint32_t t = 0;
-      if(Led3State == LED3_STATE_ON)
-        t = DELAY_LED3_ON;
-      else
-        t = DELAY_LED3_OFF;
-      if(millis-timer >= t){
-        timer = millis;
-        if(Led3State == LED3_STATE_ON){
-          HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-          sLog("LED3 is Off\r\n");
-          Led3State = LED3_STATE_OFF;
-        }
-        else
-        {
-          HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
-          sLog("LED3 is On\r\n");
-          Led3State = LED3_STATE_ON;
-        }
-      }
-    }
-    else
-    {
-      HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-    }
-
+    HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, led_mode);
     osDelay(1);
   }
   /* USER CODE END 5 */
@@ -521,19 +486,24 @@ void StartTask02(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    if(led_mode == LED_MODE_BLINK_LED1 || led_mode == LED_MODE_BLINK_BOTH){
-      HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-      sLog("LED1 is On\r\n");
+      const uint8_t Test1 = '1';
+      HAL_StatusTypeDef transmission_status = HAL_UART_Transmit(&huart6,&Test1,1,100);
+      switch(transmission_status){
+        case HAL_OK:       sLog("Transmitted message #1\r\n"); break;
+        case HAL_ERROR:    sLog("Error with transmission message #1\r\n"); break;
+        case HAL_BUSY:     sLog("USART is busy (message #1)\r\n"); break;
+        case HAL_TIMEOUT:  sLog("Transmission is timeout (message #1)\r\n"); break;
+      }
       osDelay(DELAY_LED1_ON);
-      HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-      sLog("LED1 is Off\r\n");
+      const uint8_t Test2 = '2';
+      transmission_status = HAL_UART_Transmit(&huart6,&Test2,1,100);
+      switch(transmission_status){
+        case HAL_OK:       sLog("Transmitted message #2\r\n"); break;
+        case HAL_ERROR:    sLog("Error with transmission message #2\r\n"); break;
+        case HAL_BUSY:     sLog("USART is busy (message #2)\r\n"); break;
+        case HAL_TIMEOUT:  sLog("Transmission is timeout (message #2)\r\n"); break;
+      }
       osDelay(DELAY_LED1_OFF);
-	}
-    else
-    {
-      HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-      osDelay(1);
-    }
   }
   /* USER CODE END StartTask02 */
 }
@@ -551,20 +521,23 @@ void StartTask03(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    if(led_mode == LED_MODE_BLINK_LED2 || led_mode == LED_MODE_BLINK_BOTH){
-      HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-      sLog("LED2 is On\r\n");
-      osDelay(DELAY_LED2_ON);
-      HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-      sLog("LED2 is Off\r\n");
-      osDelay(DELAY_LED2_OFF);
-    }
-    else
-    {
-      HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+	  uint8_t Test = 0;
+	  HAL_StatusTypeDef receive_status = HAL_UART_Receive(&huart2, &Test, 1, 500);
+      switch(receive_status){
+        case HAL_OK:
+        if(Test == '1'){
+          led_mode = LED1_STATE_ON;
+        }
+        else if (Test == '2'){
+           led_mode = LED1_STATE_OFF;
+        }
+        break;
+        case HAL_ERROR:    sLog("Error with receiving\r\n"); break;
+        case HAL_BUSY:     sLog("USART is busy (receiving)\r\n"); break;
+        case HAL_TIMEOUT:  sLog("Receiving is timeout\r\n"); break;
+      }
       osDelay(1);
     }
-  }
   /* USER CODE END StartTask03 */
 }
 
