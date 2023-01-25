@@ -1,4 +1,6 @@
 #include "sLog.h"
-void sLog(uint8_t* text){
-	CDC_Transmit_FS(text, strlen(text));
+uint8_t sLog(char* text,...){
+	char textTotransmit[128] = {0};
+		sprintf(textTotransmit, text);
+	return CDC_Transmit_FS(textTotransmit,strlen(textTotransmit));
 }
