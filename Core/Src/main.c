@@ -525,6 +525,7 @@ void StartTask03(void const * argument)
 	  HAL_StatusTypeDef receive_status = HAL_UART_Receive(&huart2, &Test, 1, 500);
       switch(receive_status){
         case HAL_OK:
+        sLog("Received:%c%c", Test, '\n');
         if(Test == '1'){
           led_mode = LED1_STATE_ON;
         }
@@ -540,7 +541,6 @@ void StartTask03(void const * argument)
     }
   /* USER CODE END StartTask03 */
 }
-
 /**
   * @brief  This function is executed in case of error occurrence.
   * @retval None
