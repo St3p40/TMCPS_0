@@ -3,5 +3,6 @@
 #include "stdint.h"
 #include "stdarg.h"
 #include "stdio.h"
-uint8_t sLog(char* text,...);
+void sLogPrint(char* text,...);
+void sLogUpdate();
 #endif
