@@ -1,22 +1,26 @@
 #include "sLog.h"
+
 struct{
-uint16_t Point;
-char textTotransmit[128][256];
-uint8_t textlen[128];
+  uint16_t startPoint;
+  uint16_t endPoint;
 }sLog;
+
+struct{
+  char textToTransmit[S_LOG_FIFO_SIZE];
+  uint16_t size;
+}FIFO[S_LOG_FIFO_AMOUNT];
 void sLogPrint(char* text,...){
 	va_list (arg);
 	va_start(arg, text);
-		vsprintf(&sLog.textTotransmit[sLog.Point][0], text, arg);
+		vsprintf(FIFO[sLog.endPoint].textToTransmit, text, arg);
 		va_end(arg);
-		sLog.textlen[sLog.Point] = strlen(&sLog.textTotransmit[sLog.Point][0]);
-		sLog.Point++;
+		FIFO[sLog.endPoint].size = strlen(FIFO[sLog.endPoint].textToTransmit);
+	sLog.endPoint++;
 }
 
 void sLogUpdate(){
-	if(sLog.Point)
-	for(uint8_t i = 0; i < sLog.Point + 1; i++){
-	CDC_Transmit_FS(&sLog.textTotransmit[i][0],sLog.textlen[i]);
-	}
-	sLog.Point = 0;
+	if(sLog.startPoint != sLog.endPoint)
+	for(uint16_t point = sLog.startPoint; (point)%S_LOG_FIFO_AMOUNT != sLog.endPoint+1; point = (point+1)%S_LOG_FIFO_AMOUNT){
+	CDC_Transmit_FS(FIFO[point].textToTransmit,FIFO[point].size);}
+	sLog.startPoint = sLog.endPoint;
 }
