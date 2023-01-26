@@ -4,8 +4,8 @@
 #include "stdarg.h"
 #include "stdio.h"
 
-#define S_LOG_FIFO_SIZE 128
-#define S_LOG_FIFO_AMOUNT 256
+#define S_LOG_FIFO_BUF_SIZE 128
+#define S_LOG_FIFO_OBJ_AMOUNT 256
 
 void sLogPrint(char* text,...);
 void sLogUpdate();

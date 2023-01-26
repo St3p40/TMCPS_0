@@ -1,12 +1,12 @@
 #include "sLog.h"
 typedef struct{
-      char textToTransmit[S_LOG_FIFO_SIZE];
+      char textToTransmit[S_LOG_FIFO_BUF_SIZE];
       uint16_t size;
 }FIFO;
 struct{
   uint16_t startPoint;
   uint16_t endPoint;
-  FIFO fifo[S_LOG_FIFO_AMOUNT];
+  FIFO fifo[S_LOG_FIFO_OBJ_AMOUNT];
 }sLog;
 
 void sLogPrint(char* text,...){
@@ -15,12 +15,12 @@ void sLogPrint(char* text,...){
 		vsprintf(sLog.fifo[sLog.endPoint].textToTransmit, text, arg);
 		va_end(arg);
 		sLog.fifo[sLog.endPoint].size = strlen(sLog.fifo[sLog.endPoint].textToTransmit);
-	sLog.endPoint++;
+	sLog.endPoint=sLog.endPoint%S_LOG_FIFO_OBJ_AMOUNT;
 }
 
 void sLogUpdate(){
 	if(sLog.startPoint != sLog.endPoint)
-	for(uint16_t point = sLog.startPoint; point != (sLog.endPoint+1)%S_LOG_FIFO_AMOUNT; point = (point+1)%S_LOG_FIFO_AMOUNT){
+	for(uint16_t point = sLog.startPoint; point != sLog.endPoint; point = (point+1)%S_LOG_FIFO_OBJ_AMOUNT){
 	CDC_Transmit_FS(sLog.fifo[point].textToTransmit,sLog.fifo[point].size);}
 	sLog.startPoint = sLog.endPoint;
 }
