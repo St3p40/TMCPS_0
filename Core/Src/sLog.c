@@ -16,11 +16,16 @@ void sLogPrint(char* text,...){
   va_start(arg, text);
   int16_t messageSize = vsnprintf(sLog.fifo[sLog.endPoint].msgBuff, S_LOG_FIFO_MSG_BUF_SIZE, text, arg);
   va_end(arg);
-  if(messageSize < 0)
-	  sLog.fifo[sLog.endPoint].msgSize = strlen(sLog.fifo[sLog.endPoint].msgBuff);
-  else
-	  sLog.fifo[sLog.endPoint].msgSize = messageSize;
-  sLog.endPoint=sLog.endPoint%S_LOG_FIFO_OBJ_AMOUNT;
+      if(messageSize > 0){
+    	if(messageSize > S_LOG_FIFO_MSG_BUF_SIZE - 1){
+     	  sLog.fifo[sLog.endPoint].msgBuff[S_LOG_FIFO_MSG_BUF_SIZE - 2] = '\n';
+  	  	  sLog.fifo[sLog.endPoint].msgSize = S_LOG_FIFO_MSG_BUF_SIZE;
+  	    }
+        else{
+	      sLog.fifo[sLog.endPoint].msgSize = messageSize;
+        }
+    sLog.endPoint = (sLog.endPoint + 1) % S_LOG_FIFO_OBJ_AMOUNT;
+  }
 }
 
 void sLogUpdate(){
