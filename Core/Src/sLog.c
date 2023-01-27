@@ -2,7 +2,7 @@
 
 typedef struct{
   char msgBuff[S_LOG_FIFO_MSG_BUF_SIZE];
-  int16_t msgSize;
+  uint16_t msgSize;
 }FIFO;
 
 struct{
@@ -14,15 +14,19 @@ struct{
 void sLogPrint(char* text,...){
   va_list (arg);
   va_start(arg, text);
-  sLog.fifo[sLog.endPoint].msgSize = vsnprintf(sLog.fifo[sLog.endPoint].msgBuff, S_LOG_FIFO_MSG_BUF_SIZE, text, arg);
+  int16_t messageSize = vsnprintf(sLog.fifo[sLog.endPoint].msgBuff, S_LOG_FIFO_MSG_BUF_SIZE, text, arg);
   va_end(arg);
+  if(messageSize < 0)
+	  sLog.fifo[sLog.endPoint].msgSize = strlen(sLog.fifo[sLog.endPoint].msgBuff);
+  else
+	  sLog.fifo[sLog.endPoint].msgSize = messageSize;
   sLog.endPoint=sLog.endPoint%S_LOG_FIFO_OBJ_AMOUNT;
 }
 
 void sLogUpdate(){
   if(sLog.startPoint != sLog.endPoint)
     for(uint16_t point = sLog.startPoint; point != sLog.endPoint; point = (point+1)%S_LOG_FIFO_OBJ_AMOUNT){
-      if(sLog.fifo[point].msgSize > 0)
+      if(sLog.fifo[point].msgSize)
         CDC_Transmit_FS(sLog.fifo[point].msgBuff,sLog.fifo[point].msgSize);
     }
   sLog.startPoint = sLog.endPoint;
