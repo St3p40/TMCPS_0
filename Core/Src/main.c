@@ -463,11 +463,12 @@ void StartDefaultTask(void const * argument)
   /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 5 */
-  sLog("Initialization is completed\r\n");
+  sLogPrint("Initialization is completed\r\n");
   /* Infinite loop */
   for(;;)
   {
     HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, led_mode);
+    sLogUpdate();
     osDelay(1);
   }
   /* USER CODE END 5 */
@@ -489,19 +490,19 @@ void StartTask02(void const * argument)
       const uint8_t Test1 = '1';
       HAL_StatusTypeDef transmission_status = HAL_UART_Transmit(&huart6,&Test1,1,100);
       switch(transmission_status){
-        case HAL_OK:       sLog("Transmitted message #1\r\n"); break;
-        case HAL_ERROR:    sLog("Error with transmission message #1\r\n"); break;
-        case HAL_BUSY:     sLog("USART is busy (message #1)\r\n"); break;
-        case HAL_TIMEOUT:  sLog("Transmission is timeout (message #1)\r\n"); break;
+        case HAL_OK:       sLogPrint("Transmitted message #1\r\n"); break;
+        case HAL_ERROR:    sLogPrint("Error with transmission message #1\r\n"); break;
+        case HAL_BUSY:     sLogPrint("USART is busy (message #1)\r\n"); break;
+        case HAL_TIMEOUT:  sLogPrint("Transmission is timeout (message #1)\r\n"); break;
       }
       osDelay(DELAY_LED1_ON);
       const uint8_t Test2 = '2';
       transmission_status = HAL_UART_Transmit(&huart6,&Test2,1,100);
       switch(transmission_status){
-        case HAL_OK:       sLog("Transmitted message #2\r\n"); break;
-        case HAL_ERROR:    sLog("Error with transmission message #2\r\n"); break;
-        case HAL_BUSY:     sLog("USART is busy (message #2)\r\n"); break;
-        case HAL_TIMEOUT:  sLog("Transmission is timeout (message #2)\r\n"); break;
+        case HAL_OK:       sLogPrint("Transmitted message #2\r\n"); break;
+        case HAL_ERROR:    sLogPrint("Error with transmission message #2\r\n"); break;
+        case HAL_BUSY:     sLogPrint("USART is busy (message #2)\r\n"); break;
+        case HAL_TIMEOUT:  sLogPrint("Transmission is timeout (message #2)\r\n"); break;
       }
       osDelay(DELAY_LED1_OFF);
   }
@@ -525,6 +526,7 @@ void StartTask03(void const * argument)
 	  HAL_StatusTypeDef receive_status = HAL_UART_Receive(&huart2, &Test, 1, 500);
       switch(receive_status){
         case HAL_OK:
+        sLogPrint("Received:%c%c", Test, '\n');
         if(Test == '1'){
           led_mode = LED1_STATE_ON;
         }
@@ -532,15 +534,14 @@ void StartTask03(void const * argument)
            led_mode = LED1_STATE_OFF;
         }
         break;
-        case HAL_ERROR:    sLog("Error with receiving\r\n"); break;
-        case HAL_BUSY:     sLog("USART is busy (receiving)\r\n"); break;
-        case HAL_TIMEOUT:  sLog("Receiving is timeout\r\n"); break;
+        case HAL_ERROR:    sLogPrint("Error with receiving\r\n"); break;
+        case HAL_BUSY:     sLogPrint("USART is busy (receiving)\r\n"); break;
+        case HAL_TIMEOUT:  sLogPrint("Receiving is timeout\r\n"); break;
       }
       osDelay(1);
     }
   /* USER CODE END StartTask03 */
 }
-
 /**
   * @brief  This function is executed in case of error occurrence.
   * @retval None
